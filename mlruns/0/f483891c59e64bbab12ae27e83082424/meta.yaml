@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Workflow-CI/mlruns/0/f483891c59e64bbab12ae27e83082424/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: f483891c59e64bbab12ae27e83082424
+run_name: respected-shoat-78
+run_uuid: f483891c59e64bbab12ae27e83082424
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1749219911167
+status: 1
+tags: []
+user_id: Dell
