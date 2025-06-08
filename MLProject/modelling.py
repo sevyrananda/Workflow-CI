@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 def main(n_estimators, max_depth, dataset_path):
-    # Gunakan path 'mlruns' lokal yang aman untuk semua OS
+    # Set tracking URI ke folder lokal agar bisa diupload ke artifact
     mlruns_path = Path("mlruns").resolve().as_posix()
     mlflow.set_tracking_uri(f"file:///{mlruns_path}")
     mlflow.set_experiment("RandomForest-Experiment")
@@ -20,7 +20,14 @@ def main(n_estimators, max_depth, dataset_path):
     y = data["TYPE"]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    with mlflow.start_run():
+    with mlflow.start_run() as run:
+        # Ambil run ID
+        run_id = run.info.run_id
+
+        # Simpan run_id ke file
+        with open("run_id.txt", "w") as f:
+            f.write(run_id)
+
         # Train model
         model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=42)
         model.fit(X_train, y_train)
@@ -38,6 +45,7 @@ def main(n_estimators, max_depth, dataset_path):
         mlflow.sklearn.log_model(model, "model")
 
         print(f"Model trained with accuracy: {acc}")
+        print(f"Run ID: {run_id} saved to run_id.txt")
 
 
 if __name__ == "__main__":

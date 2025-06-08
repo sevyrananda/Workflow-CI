@@ -40,19 +40,26 @@ jobs:
       - name: Run MLflow Project
         shell: bash -l {0}
         run: |
-          mlflow run ./MLProject --env-manager=conda 
+          mlflow run ./MLProject --env-manager=conda
 
-      - name: Get latest MLflow run_id from model folder
+      - name: Get latest MLflow run_id
         shell: bash -l {0}
         run: |
-          RUN_ID=$(find mlruns/0 -type d -path "*/artifacts/model" | sort | tail -n1 | cut -d'/' -f3)
+          RUN_ID=$(mlflow runs list -n 1 --experiment-name "RandomForest-Experiment" --order-by attributes.start_time DESC | tail -n1 | awk '{print $1}')
           if [ -z "$RUN_ID" ]; then
-            echo "No MLflow model artifact found."
+            echo "No MLflow run found."
             exit 1
           fi
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-          echo "Latest run_id from model artifact: $RUN_ID"
+          echo "Latest run_id: $RUN_ID"
 
+      - name: Check model path exists
+        shell: bash -l {0}
+        run: |
+          if [ ! -d "mlruns/0/$RUN_ID/artifacts/model" ]; then
+            echo "Model artifact not found for run $RUN_ID"
+            exit 1
+          fi
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -60,12 +67,10 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build Docker Image
+      - name: Build Docker Image from MLflow model
         shell: bash -l {0}
         run: |
-          echo "Checking model URI..."
-          echo "Using run ID: $RUN_ID"
-          ls -l "mlruns/0/$RUN_ID/artifacts/model"
+          echo "Building Docker image from MLflow model at run $RUN_ID"
           mlflow models build-docker --model-uri "mlruns/0/$RUN_ID/artifacts/model" --name weather-model
 
       - name: Tag Docker Image
@@ -74,18 +79,8 @@ jobs:
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/weather-model:latest
 
-      - name: Move MLflow artifacts to MLProject folder
-        shell: bash -l {0}
-        run: |
-          mkdir -p MLProject/mlruns
-          cp -r mlruns/0 "MLProject/mlruns/"
-
-      - name: Push MLflow artifacts to GitHub
-        shell: bash -l {0}
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git remote set-url origin https://github.com/${{ github.repository }}
-          git add MLProject/mlruns/
-          git commit -m "Add MLflow artifacts for run $RUN_ID" || echo "No changes to commit"
-          git push origin main
+      - name: Upload MLflow artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: mlruns
+          path: mlruns/
