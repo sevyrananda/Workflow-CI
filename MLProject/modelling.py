@@ -7,7 +7,7 @@ from mlflow.models.signature import infer_signature
 import argparse
 
 def main(n_estimators, max_depth, dataset):
-    mlflow.sklearn.autolog()
+    # mlflow.sklearn.autolog()
 
     # Load data
     data = pd.read_csv(dataset)
