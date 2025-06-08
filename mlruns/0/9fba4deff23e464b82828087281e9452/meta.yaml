@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Workflow-CI/mlruns/0/9fba4deff23e464b82828087281e9452/artifacts
+end_time: 1749395823591
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 9fba4deff23e464b82828087281e9452
+run_name: enthused-turtle-458
+run_uuid: 9fba4deff23e464b82828087281e9452
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1749395809555
+status: 3
+tags: []
+user_id: Dell

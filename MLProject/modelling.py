@@ -1,73 +1,49 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 import mlflow
 import mlflow.sklearn
-from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 from mlflow.models.signature import infer_signature
-import matplotlib.pyplot as plt
-import seaborn as sns
-import os
+import argparse
 
-# Untuk logging ke DagsHub
-from dagshub import dagshub_logger
-import dagshub
-dagshub.init(repo_owner='sevyrananda', repo_name='iris-classification', mlflow=True)
+def main(n_estimators, max_depth, dataset):
+    mlflow.sklearn.autolog()
 
-# Load data
-df = pd.read_csv('MLProject/iris_preprocessing.csv')
-X = df.drop('Species', axis=1)
-y = df['Species']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Load data
+    data = pd.read_csv(dataset)
 
-# Start MLflow
-mlflow.set_experiment("iris_model")
+    # Konversi kolom integer ke float64
+    X = data.drop(columns="TYPE")
+    X = X.astype({col: 'float64' for col in X.select_dtypes('int').columns})
+    y = data["TYPE"]
 
-with mlflow.start_run():
-    model = RandomForestClassifier()
-    model.fit(X_train, y_train)
+    # Split data
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    preds = model.predict(X_test)
+    with mlflow.start_run():
+        model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth)
+        model.fit(X_train, y_train)
 
-    acc = accuracy_score(y_test, preds)
-    prec = precision_score(y_test, preds, average='macro')
-    rec = recall_score(y_test, preds, average='macro')
+        predictions = model.predict(X_test)
+        signature = infer_signature(X_test, predictions)
 
-    mlflow.log_param("model_type", "RandomForest")
-    mlflow.log_metric("accuracy", acc)
-    mlflow.log_metric("precision", prec)
-    mlflow.log_metric("recall", rec)
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path="model",
+            signature=signature,
+            input_example=X_test.iloc[:5]
+        )
 
-    # Log model
-    signature = infer_signature(X_test, preds)
-    input_example = X_test.iloc[:1]
-    mlflow.sklearn.log_model(model, "model", signature=signature, input_example=input_example)
+        accuracy = model.score(X_test, y_test)
+        mlflow.log_metric("accuracy", accuracy)
 
-    # === Artefak 1: Confusion Matrix ===
-    cm = confusion_matrix(y_test, preds, labels=model.classes_)
-    plt.figure(figsize=(6, 4))
-    sns.heatmap(cm, annot=True, fmt='d', xticklabels=model.classes_, yticklabels=model.classes_)
-    plt.title('Confusion Matrix')
-    plt.xlabel('Predicted')
-    plt.ylabel('Actual')
+        print(f"Model logged to MLflow with accuracy: {accuracy:.4f}")
 
-    os.makedirs("plots", exist_ok=True)
-    cm_path = "plots/confusion_matrix.png"
-    plt.savefig(cm_path)
-    plt.close()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--n_estimators", type=int, default=505)
+    parser.add_argument("--max_depth", type=int, default=37)
+    parser.add_argument("--dataset", type=str, default="MLProject/seed_preprocessing.csv")
+    args = parser.parse_args()
 
-    mlflow.log_artifact(cm_path)
-
-    # === Artefak 2: Feature Importance ===
-    feature_imp = pd.Series(model.feature_importances_, index=X.columns).sort_values(ascending=False)
-    plt.figure(figsize=(6, 4))
-    sns.barplot(x=feature_imp, y=feature_imp.index)
-    plt.title("Feature Importance")
-    plt.xlabel("Score")
-    plt.ylabel("Features")
-
-    fi_path = "plots/feature_importance.png"
-    plt.savefig(fi_path)
-    plt.close()
-
-    mlflow.log_artifact(fi_path)
+    main(args.n_estimators, args.max_depth, args.dataset)

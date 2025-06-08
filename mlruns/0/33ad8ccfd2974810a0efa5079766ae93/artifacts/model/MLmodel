@@ -1,0 +1,36 @@
+artifact_path: model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.3
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.5.0
+is_signature_from_type_hint: false
+mlflow_version: 2.22.1
+model_size_bytes: 1303076
+model_uuid: e818e1f0408c47b7bc4dcdac6f4a8f85
+prompts: null
+run_id: 33ad8ccfd2974810a0efa5079766ae93
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "AREA", "required": true}, {"type": "double",
+    "name": "PERIMETER", "required": true}, {"type": "double", "name": "COMPACTNESS",
+    "required": true}, {"type": "double", "name": "LENGTH", "required": true}, {"type":
+    "double", "name": "WIDTH", "required": true}, {"type": "double", "name": "ASSYMMETRY_COEFFICIENT",
+    "required": true}, {"type": "double", "name": "GROOVE_LENGTH", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-06-08 15:20:51.946889'

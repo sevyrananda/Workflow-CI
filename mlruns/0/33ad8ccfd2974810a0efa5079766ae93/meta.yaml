@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Workflow-CI/mlruns/0/33ad8ccfd2974810a0efa5079766ae93/artifacts
+end_time: 1749396057667
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 33ad8ccfd2974810a0efa5079766ae93
+run_name: defiant-slug-874
+run_uuid: 33ad8ccfd2974810a0efa5079766ae93
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1749396040922
+status: 3
+tags: []
+user_id: Dell
