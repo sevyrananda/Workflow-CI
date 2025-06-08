@@ -1,0 +1,6 @@
+artifact_location: file:///D:/Workflow-CI/mlruns/120504774831700684
+creation_time: 1749399375553
+experiment_id: '120504774831700684'
+last_update_time: 1749399375553
+lifecycle_stage: active
+name: RandomForest-Experiment
