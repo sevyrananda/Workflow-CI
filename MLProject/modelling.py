@@ -7,7 +7,9 @@ from mlflow.models.signature import infer_signature
 import argparse
 
 def main(n_estimators, max_depth, dataset):
-    # mlflow.sklearn.autolog()
+    import os
+    mlflow.set_tracking_uri("file://" + os.path.abspath("mlruns"))
+    # mlflow.sklearn.autolog()  # Jangan pakai ini kalau sudah log manual
 
     # Load data
     data = pd.read_csv(dataset)
@@ -38,6 +40,7 @@ def main(n_estimators, max_depth, dataset):
         mlflow.log_metric("accuracy", accuracy)
 
         print(f"Model logged to MLflow with accuracy: {accuracy:.4f}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
