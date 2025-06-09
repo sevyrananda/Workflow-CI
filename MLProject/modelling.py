@@ -8,7 +8,7 @@ import argparse
 import os
 
 def main(n_estimators, max_depth, dataset):
-    mlflow.set_artifact_uri(os.getenv("MLFLOW_ARTIFACT_URI", "mlruns"))
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_ARTIFACT_URI", "file:./mlruns"))
     mlflow.sklearn.autolog()
 
     # Load data
