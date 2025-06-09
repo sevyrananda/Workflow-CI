@@ -10,7 +10,7 @@ on:
 
 env:
   CSV_URL: "MLProject/seed_preprocessing.csv"
-  TARGET_VAR: "Type"
+  TARGET_VAR: "TYPE"
 
 jobs:
   build:
@@ -40,7 +40,7 @@ jobs:
       - name: Run MLflow Project
         shell: bash -l {0}
         run: |
-          mlflow run ./MLProject --env-manager=conda 
+          mlflow run ./MLProject --env-manager=local
 
       - name: Get latest MLflow run_id from model folder
         shell: bash -l {0}
