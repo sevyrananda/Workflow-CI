@@ -5,8 +5,10 @@ import mlflow
 import mlflow.sklearn
 from mlflow.models.signature import infer_signature
 import argparse
+import os
 
 def main(n_estimators, max_depth, dataset):
+    mlflow.set_artifact_uri(os.getenv("MLFLOW_ARTIFACT_URI", "mlruns"))
     mlflow.sklearn.autolog()
 
     # Load data

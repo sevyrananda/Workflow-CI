@@ -40,6 +40,8 @@ jobs:
 
       - name: Run MLflow Project
         shell: bash -l {0}
+        env:
+          MLFLOW_ARTIFACT_URI: ./mlruns
         run: |
           mlflow run ./MLProject --env-manager=local -P dataset=seed_preprocessing.csv
 
