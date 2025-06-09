@@ -9,6 +9,7 @@ on:
       - main
 
 env:
+  MLFLOW_ARTIFACT_URI: ./mlruns
   CSV_URL: "MLProject/seed_preprocessing.csv"
   TARGET_VAR: "TYPE"
 
