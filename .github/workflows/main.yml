@@ -42,7 +42,7 @@ jobs:
         id: mlflow_run
         shell: bash -l {0}
         run: |
-          mlflow run ./MLProject -P dataset=seed_preprocessing.csv --no-conda
+          mlflow run ./MLProject -P dataset=seed_preprocessing.csv
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
