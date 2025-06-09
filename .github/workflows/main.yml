@@ -45,7 +45,8 @@ jobs:
     - name: Upload artifact to GitHub
       run: |
         mkdir -p artifact_upload
-        cp -r ~/.mlflow/mlruns/*/*/artifacts/model artifact_upload/
+        MODEL_PATH=$(find mlruns -type d -name "model" | tail -1)
+        cp -r "$MODEL_PATH" artifact_upload/
       continue-on-error: true
 
     - name: Upload model artifact
@@ -54,10 +55,9 @@ jobs:
         name: trained-model
         path: artifact_upload
 
-    - name: Copy latest model to artifact_upload
+    - name: Copy model to artifact_upload
       run: |
-        RUN_ID=$(mlflow experiments list --view-type active | awk 'NR==2{print $1}')
-        MODEL_PATH=$(find mlruns -type d -name "artifacts" | tail -1)/model
+        MODEL_PATH=$(find mlruns -type d -name "model" | tail -1)
         mkdir -p artifact_upload
         cp -r "$MODEL_PATH" artifact_upload/
 
